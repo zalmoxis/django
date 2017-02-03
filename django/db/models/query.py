@@ -665,8 +665,12 @@ class QuerySet(object):
         assert self.query.can_filter(), \
             "Cannot update a query once a slice has been taken."
         query = self.query.clone(sql.UpdateQuery)
+        # Clear any annotations so that they won't be present in subqueries.
+        query._annotations = None
         query.add_update_fields(values)
         self._result_cache = None
+        # Clear any annotations so that they won't be present in subqueries.
+        query._annotations = None
         return query.get_compiler(self.db).execute_sql(CURSOR)
     _update.alters_data = True
     _update.queryset_only = False
